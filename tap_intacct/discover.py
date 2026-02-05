@@ -4,11 +4,26 @@ from tap_intacct import s3
 def discover_streams(config):
     streams = []
 
-    exported_tables = s3.get_exported_tables(config['bucket'], config['company_id'], path=config.get('path'))
+    only_stream = config.get("only_stream")
+
+    exported_tables = s3.get_exported_tables(
+        config['bucket'],
+        config['company_id'],
+        path=config.get('path')
+    )
 
     for exported_table in exported_tables:
+        if only_stream and exported_table != only_stream:
+            continue
+
         schema = s3.get_sampled_schema_for_table(config, exported_table)
-        streams.append({'stream': exported_table, 'tap_stream_id': exported_table, 'schema': schema, 'metadata': load_metadata(schema)})
+        streams.append({
+            'stream': exported_table,
+            'tap_stream_id': exported_table,
+            'schema': schema,
+            'metadata': load_metadata(schema),
+        })
+
     return streams
 
 
