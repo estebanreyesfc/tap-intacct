@@ -28,13 +28,14 @@ def stream_is_selected(mdata):
 
 def do_sync(config, catalog, state):
     LOGGER.info('Starting sync.')
+    target = config.get("only_stream")
 
     for stream in catalog['streams']:
         stream_name = stream['tap_stream_id']
         mdata = metadata.to_map(stream['metadata'])
 
-        if not stream_is_selected(mdata):
-            LOGGER.info("%s: Skipping - not selected", stream_name)
+        if target and stream_name != target:
+            LOGGER.info("%s: Skipping - not selected by config", stream_name)
             continue
 
         singer.write_state(state)
