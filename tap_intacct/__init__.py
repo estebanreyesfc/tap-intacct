@@ -29,6 +29,7 @@ def stream_is_selected(mdata):
 def do_sync(config, catalog, state):
     LOGGER.info('Starting sync.')
     target = config.get("only_stream")
+    print(target)
 
     for stream in catalog['streams']:
         stream_name = stream['tap_stream_id']
